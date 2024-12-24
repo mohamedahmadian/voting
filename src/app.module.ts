@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { datasourceConfig } from './typeorm.config';
 import { PollModule } from './poll/poll.module';
+import { OptionsModule } from './option/option.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PollModule } from './poll/poll.module';
       }),
     }),
     PollModule,
+    OptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

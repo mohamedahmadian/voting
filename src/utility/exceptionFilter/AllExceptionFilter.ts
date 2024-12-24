@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { HttpException } from '@nestjs/common';
 import { EntityNotFoundError } from 'typeorm'; // For handling TypeORM errors (optional)
 import { QueryFailedError } from 'typeorm'; // For handling database errors (optional)
+import * as moment from 'moment';
 
 @Catch() // This will catch all errors, not just HTTP exceptions
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -30,7 +31,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       message: exception.message || 'Internal server error',
-      timestamp: new Date().toISOString(),
+      timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
     });
   }
 }

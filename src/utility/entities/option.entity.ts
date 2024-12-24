@@ -16,7 +16,7 @@ export class Option {
   @Column()
   text: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @ManyToOne(() => Poll, (poll) => poll.options)
