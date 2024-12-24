@@ -14,7 +14,7 @@ export class Option {
   id: number;
 
   @Column()
-  text: string;
+  title: string;
 
   @Column({ nullable: true })
   description: string;

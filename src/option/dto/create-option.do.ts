@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsInt } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 
 export class CreateOptionDto {
   @IsString()
@@ -9,7 +9,16 @@ export class CreateOptionDto {
     example: 'a sample title',
     type: String,
   })
-  text: string;
+  title: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({
+    description: 'The description of the option',
+    example: 'a sample description',
+    type: String,
+  })
+  description?: string;
 
   @IsInt()
   @IsNotEmpty()

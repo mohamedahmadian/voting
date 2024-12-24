@@ -8,7 +8,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Option } from 'src/utility/entities/option.entity';
 import { Poll } from 'src/utility/entities/poll.entity';
 import { Repository } from 'typeorm';
-import { CreateOptionDto } from './dto/create-option-do';
+import { CreateOptionDto } from './dto/create-option.do';
+import { UpdateOptionDto } from './dto/update-option.dto';
+import { FindOptionDto } from './dto/find-option.dto';
 
 @Injectable()
 export class OptionsService {
@@ -29,7 +31,7 @@ export class OptionsService {
 
     const existingOption = await this.optionRepository.findOne({
       where: {
-        text: createOptionDto.text,
+        title: createOptionDto.title,
         poll: { id: createOptionDto.pollId },
       },
     });
@@ -41,7 +43,8 @@ export class OptionsService {
     }
 
     const option = this.optionRepository.create({
-      text: createOptionDto.text,
+      title: createOptionDto.title,
+      description: createOptionDto.description,
       poll,
     });
 
@@ -65,8 +68,26 @@ export class OptionsService {
     return 'Option removed successfully.';
   }
 
-  async findAll(): Promise<Option[]> {
-    return this.optionRepository.find({ relations: ['poll'] });
+  async findAll(findOptionDto: FindOptionDto): Promise<Option[]> {
+    const queryBuilder = this.optionRepository.createQueryBuilder('option');
+
+    if (findOptionDto.id) {
+      queryBuilder.andWhere('option.id = :id', { id: findOptionDto.id });
+    }
+
+    if (findOptionDto.title) {
+      queryBuilder.andWhere('option.title LIKE :title', {
+        title: `%${findOptionDto.title}%`,
+      });
+    }
+
+    if (findOptionDto.pollId) {
+      queryBuilder.andWhere('option.pollId = :pollId', {
+        pollId: findOptionDto.pollId,
+      });
+    }
+
+    return queryBuilder.getMany();
   }
 
   async findOption(optionId: number): Promise<Option> {
@@ -80,20 +101,22 @@ export class OptionsService {
     }
     return option;
   }
-  async findByPoll(pollId: number): Promise<Option[]> {
-    const poll = await this.pollRepository.findOne({
-      where: { id: pollId },
-    });
-    if (!poll) {
-      throw new NotFoundException('Poll not found');
-    }
 
-    return this.optionRepository.find({
+  async update(id: number, updateOptionDto: UpdateOptionDto): Promise<Option> {
+    const option = await this.optionRepository.findOne({
       where: {
-        poll: {
-          id: pollId,
-        },
+        id,
       },
     });
+
+    if (!option) {
+      throw new NotFoundException('Option not found');
+    }
+
+    if (updateOptionDto.title) {
+      option.title = updateOptionDto.title;
+    }
+
+    return this.optionRepository.save(option);
   }
 }
