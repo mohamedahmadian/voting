@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { datasourceConfig } from './typeorm.config';
+import { PollModule } from './poll/poll.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { datasourceConfig } from './typeorm.config';
         autoLoadEntities: true,
       }),
     }),
+    PollModule,
   ],
   controllers: [AppController],
   providers: [AppService],

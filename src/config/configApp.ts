@@ -1,8 +1,9 @@
 import 'dotenv/config';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from 'src/utility/interceptors/request-logger.interceptor';
+import { AllExceptionsFilter } from 'src/utility/exceptionFilter/AllExceptionFilter';
 
 export const getEnv = (name: string, def = ''): string => {
   try {
@@ -28,7 +29,8 @@ export const currentEnv = () => getEnv('ENV', availableEnv.LOCAL) as any;
 
 export const isLocal = () => currentEnv() === availableEnv.LOCAL;
 
-export function configApp(app: any) {
+export function configApp(app: INestApplication<any>) {
+  app.useGlobalFilters(new AllExceptionsFilter());
   const config = new DocumentBuilder()
     .setTitle(getEnv('SERVICE_NAME'))
     .setDescription(getEnv('SERVICE_DESC'))
@@ -47,5 +49,6 @@ export function configApp(app: any) {
 
   //==================== Interceptor ===============================
   app.useGlobalInterceptors(new LoggingInterceptor());
+
   //==================== Interceptor ===============================
 }
