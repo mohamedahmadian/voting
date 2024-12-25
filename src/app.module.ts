@@ -7,6 +7,7 @@ import { PollModule } from './poll/poll.module';
 import { OptionsModule } from './option/option.module';
 import { UserModule } from './user/user.module';
 import { VoteModule } from './vote/vote.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { VoteModule } from './vote/vote.module';
     PollModule,
     OptionsModule,
     UserModule,
+    ClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],

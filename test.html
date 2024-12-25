@@ -1,0 +1,25 @@
+<script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+<script>
+  const socket = io('http://localhost:7000', {
+    transports: ['websocket'], // Ensure the WebSocket transport is enabled
+  });
+
+  socket.on('connect', () => {
+    console.log('Connected to WebSocket server');
+  });
+
+  socket.on('message', (data) => {
+    console.log('Message from server:', data);
+  });
+
+  socket.on('broadcast', (data) => {
+    console.log(`Message from ${data.from}: ${data.message}`);
+  });
+
+  socket.on('connect_error', (err) => {
+    console.error('Connection error:', err);
+  });
+
+  // Send a message to the server
+  socket.emit('message', 'Hello from client!');
+</script>
