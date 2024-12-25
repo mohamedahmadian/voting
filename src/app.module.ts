@@ -6,6 +6,7 @@ import { datasourceConfig } from './typeorm.config';
 import { PollModule } from './poll/poll.module';
 import { OptionsModule } from './option/option.module';
 import { UserModule } from './user/user.module';
+import { VoteModule } from './vote/vote.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './user/user.module';
         autoLoadEntities: true,
       }),
     }),
+    VoteModule,
     PollModule,
     OptionsModule,
     UserModule,

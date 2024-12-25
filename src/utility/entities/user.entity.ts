@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Poll } from './poll.entity';
 import { Vote } from './vote.entity';
+import { Exclude, Transform } from 'class-transformer';
+import * as moment from 'moment';
 
 @Entity()
 export class User {
@@ -11,6 +13,7 @@ export class User {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
@@ -23,8 +26,14 @@ export class User {
   votes: Vote[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Transform(({ value }) => {
+    return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : value;
+  })
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Transform(({ value }) => {
+    return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : value;
+  })
   updatedAt: Date;
 }

@@ -8,6 +8,8 @@ import {
 import { User } from './user.entity';
 import { Option } from './option.entity';
 import { Vote } from './vote.entity';
+import { Transform } from 'class-transformer';
+import * as moment from 'moment';
 
 @Entity()
 export class Poll {
@@ -30,8 +32,14 @@ export class Poll {
   votes: Vote[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Transform(({ value }) => {
+    return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : value;
+  })
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Transform(({ value }) => {
+    return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : value;
+  })
   updatedAt: Date;
 }

@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from 'src/utility/interceptors/request-logger.interceptor';
 import { AllExceptionsFilter } from 'src/utility/exceptionFilter/AllExceptionFilter';
+import { TransformInterceptor } from 'src/utility/interceptors/transform.interceptor';
 
 export const getEnv = (name: string, def = ''): string => {
   try {
@@ -49,6 +50,7 @@ export function configApp(app: INestApplication<any>) {
 
   //==================== Interceptor ===============================
   app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   //==================== Interceptor ===============================
 }

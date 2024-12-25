@@ -47,8 +47,7 @@ export class UserService {
   async findOne(id: number) {
     try {
       const user = await this.userRepository.findOneByOrFail({ id });
-      const { password, ...info } = user;
-      return info;
+      return user;
     } catch (error) {
       throw new NotFoundException('User not found by this id');
     }
@@ -67,7 +66,6 @@ export class UserService {
     }
 
     const queryOptions: any = {
-      select: ['id', 'username', 'name', 'votes'],
       relations,
     };
 
@@ -80,13 +78,11 @@ export class UserService {
   async findAllByPoll(): Promise<User[]> {
     return this.userRepository.find({
       relations: ['polls'],
-      select: ['id', 'username', 'name', 'votes'],
     });
   }
 
   async delete(id: number): Promise<string> {
     const result = await this.userRepository.delete(id);
-    console.log(result);
     if (result.affected > 0) return `User (${id}) deleted successfully`;
     else throw new NotFoundException('User not found');
   }
