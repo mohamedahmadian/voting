@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Socket } from 'socket.io';
 
 @Injectable()
 export class ClientService {
+  constructor(private readonly eventEmitter: EventEmitter2) {}
   private activeClients = new Map<string, Socket>();
 
   addClient(clientId: string, socket: Socket) {
@@ -19,5 +21,9 @@ export class ClientService {
 
   getAllClientsCount(): number {
     return this.activeClients.size;
+  }
+
+  broadCastMessage(message: string) {
+    this.eventEmitter.emit('broadcastIt', message);
   }
 }

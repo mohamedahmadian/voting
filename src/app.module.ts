@@ -8,6 +8,7 @@ import { OptionsModule } from './option/option.module';
 import { UserModule } from './user/user.module';
 import { VoteModule } from './vote/vote.module';
 import { ClientModule } from './client/client.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ClientModule } from './client/client.module';
     OptionsModule,
     UserModule,
     ClientModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

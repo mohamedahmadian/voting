@@ -7,6 +7,7 @@ import {
 import { Logger } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { Socket, Server } from 'socket.io';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -40,13 +41,12 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return 'Message received!';
   }
 
-  @SubscribeMessage('broadcast')
-  handleBroadcastMessage(client: Socket, payload: { message: string }): void {
-    this.logger.log(`Broadcasting message: ${payload.message}`);
+  @OnEvent('broadcastIt')
+  handleBroadcastMessage(message: string): void {
     this.clientService.getAllClients().forEach((socket) => {
       socket.emit('broadcast', {
-        message: payload.message,
-        from: client.id,
+        from: 'boradcasting system',
+        message: message,
       });
     });
   }
