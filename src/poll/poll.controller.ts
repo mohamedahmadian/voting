@@ -49,6 +49,18 @@ export class PollController {
     return this.pollService.findAll(query);
   }
 
+  @Get('result/:pollId')
+  @ApiOperation({ summary: 'Return statistic for selected poll' })
+  @ApiQuery({
+    name: 'pollId',
+    required: false,
+    description: 'Filter by poll ID',
+    type: String,
+  })
+  async getPollResult(@Query('pollId', ParseIntPipe) pollId: number) {
+    return this.pollService.getPollReport(pollId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'find a poll by id' })
   @ApiParam({

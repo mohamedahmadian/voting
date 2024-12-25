@@ -71,4 +71,25 @@ export class PollService {
 
     return this.pollRepository.save(poll);
   }
+  async getPollReport(pollId: number) {
+    const poll = await this.pollRepository.findOne({
+      where: { id: pollId },
+      relations: ['votes', 'votes.option'],
+    });
+    if (!poll) {
+      throw new NotFoundException('Poll not found');
+    }
+
+    const totalVotes = poll.votes.length;
+    const optionVotes = poll.votes.reduce((acc, vote) => {
+      const optionTitle = vote.option.title;
+      if (!acc[optionTitle]) {
+        acc[optionTitle] = 0;
+      }
+      acc[optionTitle]++;
+      return acc;
+    }, {});
+
+    return { totalVotes, optionVotes };
+  }
 }
