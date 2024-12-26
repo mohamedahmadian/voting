@@ -24,13 +24,10 @@ export class OptionsController {
     return this.optionsService.create(createOptionDto);
   }
 
-  @Delete()
+  @Delete(':optionId')
   @ApiOperation({ summary: 'Remove an option from a poll' })
-  async removeOption(
-    @Body() removeOptionDto: RemoveOptionDto,
-  ): Promise<string> {
-    const { pollId, optionId } = removeOptionDto;
-    return this.optionsService.removeOptionFromPoll(pollId, optionId);
+  async removeOption(@Param('optionId') optionId: number): Promise<string> {
+    return this.optionsService.removeOptionFromPoll(optionId);
   }
 
   @Get()

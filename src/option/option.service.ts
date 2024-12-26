@@ -51,21 +51,16 @@ export class OptionsService {
     return this.optionRepository.save(option);
   }
 
-  async removeOptionFromPoll(
-    pollId: number,
-    optionId: number,
-  ): Promise<string> {
-    const option = await this.optionRepository.findOne({
-      where: { id: optionId, poll: { id: pollId } },
-    });
-
-    if (!option) {
-      throw new NotFoundException('Option not found for the specified poll.');
+  async removeOptionFromPoll(optionId: number): Promise<string> {
+    try {
+      await this.optionRepository.delete({ id: optionId });
+      return 'Option removed successfully.';
+    } catch (error) {
+      throw new HttpException(
+        "You can't delete this poll becaause of votings  on this option",
+        400,
+      );
     }
-
-    await this.optionRepository.remove(option);
-
-    return 'Option removed successfully.';
   }
 
   async findAll(findOptionDto: FindOptionDto): Promise<Option[]> {

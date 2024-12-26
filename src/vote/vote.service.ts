@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,7 +11,7 @@ import { Vote } from 'src/utility/entities/vote.entity';
 import { Poll } from 'src/utility/entities/poll.entity';
 import { User } from 'src/utility/entities/user.entity';
 import { Option } from 'src/utility/entities/option.entity';
-import { classToPlain, instanceToPlain } from 'class-transformer';
+import * as moment from 'moment';
 
 @Injectable()
 export class VoteService {
@@ -99,6 +100,54 @@ export class VoteService {
     return this.voteRepository.find({
       where: { option: { id: optionId } },
       relations: ['user', 'poll'],
+    });
+  }
+
+  async getActiveUsers(): Promise<{ name: string; voteCount: number }[]> {
+    const activeUsers = await this.voteRepository
+      .createQueryBuilder('vote')
+      .select('user.name', 'name')
+      .addSelect('COUNT(vote.id)', 'vote_count')
+      .innerJoin('vote.user', 'user')
+      .groupBy('user.id')
+      .addGroupBy('user.name')
+      .orderBy('vote_count', 'DESC')
+      .getRawMany();
+
+    return activeUsers.map((user) => ({
+      name: user.name,
+      voteCount: parseInt(user.vote_count, 10), // Ensure proper numeric format
+    }));
+  }
+
+  async getMostActivePolls(): Promise<
+    { pollTitle: string; voteCount: number }[]
+  > {
+    const pollParticipation = await this.voteRepository
+      .createQueryBuilder('vote')
+      .select('poll.title', 'pollTitle')
+      .addSelect('COUNT(vote.id)', 'vote_count')
+      .innerJoin('vote.poll', 'poll')
+      .groupBy('poll.id')
+      .addGroupBy('poll.title')
+      .orderBy('vote_count', 'DESC')
+      .getRawMany();
+
+    return pollParticipation;
+  }
+
+  async getVotesByUser(userId: number) {
+    const votes = await this.voteRepository.find({
+      where: { user: { id: userId } },
+      relations: ['option', 'poll'],
+    });
+    return votes.map((item) => {
+      return {
+        id: item.id,
+        createdAt: moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+        poll: item.poll.title,
+        option: item.option.title,
+      };
     });
   }
 }

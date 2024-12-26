@@ -4,13 +4,11 @@ import {
   Get,
   Body,
   Param,
-  Query,
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
 import { VoteService } from './vote.service';
 import { CreateVoteDto } from './dto/create-vote.dto';
-import { ReportVoteDto } from './dto/report-vote.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Votes')
@@ -37,6 +35,17 @@ export class VoteController {
     return this.voteService.getPollReport(pollId);
   }
 
+  @Get('user/most-active')
+  @ApiOperation({ summary: 'Most active user in votings' })
+  async getActiveUsers() {
+    return this.voteService.getActiveUsers();
+  }
+  @Get('poll/most-active')
+  @ApiOperation({ summary: 'Most active user in votings' })
+  async getMostActivePolls() {
+    return this.voteService.getMostActivePolls();
+  }
+
   @Get('poll/:pollId')
   @ApiOperation({ summary: 'Get votes per poll' })
   async getVotesByPoll(@Param('pollId') pollId: number) {
@@ -47,5 +56,11 @@ export class VoteController {
   @ApiOperation({ summary: 'Get votes per option' })
   async getVotesByOption(@Param('optionId') optionId: number) {
     return this.voteService.getVotesByOption(optionId);
+  }
+
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get votes per poll' })
+  async getVotesByUser(@Param('userId') userId: number) {
+    return this.voteService.getVotesByUser(userId);
   }
 }

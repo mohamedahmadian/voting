@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -11,7 +12,6 @@ import { CreatePollDto } from './dto/create-poll.dto';
 import { Poll } from 'src/utility/entities/poll.entity';
 import { UpdatePollDto } from './dto/update-pol.dto';
 import { FindPollDto } from './dto/find-poll.dto';
-import moment from 'moment';
 
 @Injectable()
 export class PollService {
@@ -22,6 +22,14 @@ export class PollService {
 
   async create(createPollDto: CreatePollDto): Promise<Poll> {
     const poll = this.pollRepository.create(createPollDto);
+    const existingPoll = await this.pollRepository.findOne({
+      where: {
+        title: createPollDto.title,
+      },
+    });
+    if (existingPoll) {
+      throw new ConflictException('Poll title should be unique');
+    }
     return this.pollRepository.save(poll);
   }
 
@@ -91,5 +99,17 @@ export class PollService {
     }, {});
 
     return { totalVotes, optionVotes };
+  }
+
+  async delete(pollId: number) {
+    try {
+      await this.pollRepository.delete({ id: pollId });
+      return 'Poll removed successfully';
+    } catch (error) {
+      throw new HttpException(
+        "You can't delete this poll becaause of votings  on this pool",
+        400,
+      );
+    }
   }
 }

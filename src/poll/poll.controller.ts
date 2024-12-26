@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { PollService } from './poll.service';
 import { CreatePollDto } from './dto/create-poll.dto';
@@ -85,5 +86,11 @@ export class PollController {
   })
   async update(@Param('id') id: number, @Body() updatePollDto: UpdatePollDto) {
     return this.pollService.update(id, updatePollDto);
+  }
+
+  @Delete(':pollId')
+  @ApiOperation({ summary: 'Remove a poll' })
+  async removeOption(@Param('pollId') pollId: number): Promise<string> {
+    return this.pollService.delete(pollId);
   }
 }
