@@ -5,16 +5,15 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">Amazing Voting System</p>
+  <p align="center">Voting System</p>
 
 ## Description
 
-Implemented in nestjs supporting both rest and websoket as communication protocol and used swagger for api documentation and also retool as administration dashboard
+This project is built with NestJS, supporting both REST and WebSocket communication protocols. It uses Swagger for API documentation and Retool as an administration dashboard. The service is deployed on Render.com, a free hosting platform.
 
-Deployed on Render.com free hosting
-Address:[Voting service](https://voting-6hp9.onrender.com)
-Retool Address: [Retool](https://zsco.retool.com/apps/voting)
-Swagger Address: [Swagger](https://voting-6hp9.onrender.com/swagger)
+- Address:[Voting service](https://voting-6hp9.onrender.com)
+- Retool Address: [Retool](https://zsco.retool.com/apps/voting)
+- Swagger Address: [Swagger](https://voting-6hp9.onrender.com/swagger)
 
 ## Project setup
 
@@ -49,9 +48,7 @@ we used postgres as our database and Typeorm as our ORM and have following entit
 
 ## Retool
 
-We used this platform for creating a simple dashboard for our backend service consist of voting logic and websocket managements.
-
-For each endpoint in bakend service, we have implemented forms and visual functionalities which user can touch and test them directly without needing calling them via swagger or other rest client programs
+Retool is used to create an easy-to-use admin interface for managing the voting system and WebSocket logic. Each endpoint of the backend service is represented with forms and interactive tools, allowing users to test the service without needing to use Swagger or other REST client tools.
 
 Retool Address: [https://zsco.retool.com/apps/voting](https://zsco.retool.com/apps/voting)
 
@@ -60,15 +57,11 @@ Retool Address: [https://zsco.retool.com/apps/voting](https://zsco.retool.com/ap
 The test project has been deployed on Render.com website which consist of following:
 
 - postgres database
-  -- storing information about following entities
-  --- user
-  --- poll
-  --- options
-  --- voting
+  -- storing data about voting system
 - voting backend service
-  -- This service has logic for voting system, websocket managements
+  -- TContains the voting system logic and WebSocket management.
 - socket client test service
-  -- This service is used to act as client ( websocket ) for out websocket server that is launched on the same port of backend service ( )
+  -- Simulates a WebSocket client that connects to the WebSocket server running on the same port as the backend service.
 
 ## Support
 
@@ -77,6 +70,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## Stay in touch
 
 - Author - [Mohamed Ahmadain](mohamed.ahmadian@gmail.com)
+
 - github - [Voting source](https://github.com/mohamedahmadian/voting/tree/main)
 
 ## License
