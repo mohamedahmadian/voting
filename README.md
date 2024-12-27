@@ -9,9 +9,9 @@
 
 ## Description
 
-This project is built with NestJS, supporting both REST and WebSocket communication protocols. It uses Swagger for API documentation and Retool as an administration dashboard. The service is deployed on Render.com, a free hosting platform.
+This project is built with NestJS handling logic for voting system with minimal features that could be implemented in less than a week. It uses Swagger for API documentation and Retool as an administration dashboard. The service is deployed on Render.com, a free hosting platform.
 
-- Address:[Voting service](https://voting-6hp9.onrender.com)
+- Voting service: [Voting service](https://voting-6hp9.onrender.com)
 - Retool Address: [Retool](https://zsco.retool.com/apps/voting)
 - Swagger Address: [Swagger](https://voting-6hp9.onrender.com/swagger)
 
@@ -56,12 +56,17 @@ Retool Address: [https://zsco.retool.com/apps/voting](https://zsco.retool.com/ap
 
 The test project has been deployed on Render.com website which consist of following:
 
-- postgres database
-  -- storing data about voting system
-- voting backend service
-  -- TContains the voting system logic and WebSocket management.
-- socket client test service
-  -- Simulates a WebSocket client that connects to the WebSocket server running on the same port as the backend service.
+### postgres database
+
+storing data about voting system
+
+### voting backend service
+
+Contains the voting system logic and WebSocket management.
+
+### socket client test service
+
+Simulates a WebSocket client that connects to the WebSocket server running on the same port as the backend service.
 
 ## Support
 
