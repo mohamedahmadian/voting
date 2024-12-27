@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="http://nestjs.com/" target="blank"><img src="https://electionbuddy.com/wp-content/uploads/2022/01/Voting-image-6-scaled.jpg" width="120" alt="Nest Logo" /></a>
 </p>
 
 [circleci-image]: https://electionbuddy.com/wp-content/uploads/2022/01/Voting-image-6-scaled.jpg
