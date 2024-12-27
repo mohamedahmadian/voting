@@ -96,7 +96,7 @@ export class VoteService {
       }),
     );
 
-    return { totalVotes, optionVotesArray };
+    return { poll: poll.title, totalVotes, optionVotesArray };
   }
 
   async getVotesByPoll(pollId: number) {

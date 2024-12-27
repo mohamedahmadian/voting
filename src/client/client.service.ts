@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Socket } from 'socket.io';
 import { MessageTypeEnum } from './enum/messageType.enum';
-import { VoteService } from 'src/vote/vote.service';
+import { VoteService } from '../vote/vote.service';
 
 @Injectable()
 export class ClientService {
@@ -27,9 +27,7 @@ export class ClientService {
   async broadCastMessage(type: MessageTypeEnum, messageOrPollId: string) {
     let message: any = messageOrPollId;
     if (type == MessageTypeEnum.poll) {
-      message = JSON.stringify(
-        await this.voteService.getPollReport(parseInt(messageOrPollId)),
-      );
+      message = await this.voteService.getPollReport(parseInt(messageOrPollId));
     }
     this.eventEmitter.emit('broadcastMessage', message);
   }
