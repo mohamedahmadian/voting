@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateVoteDto } from './dto/create-vote.dto';
-import { Vote } from 'src/utility/entities/vote.entity';
-import { Poll } from 'src/utility/entities/poll.entity';
-import { User } from 'src/utility/entities/user.entity';
-import { Option } from 'src/utility/entities/option.entity';
+import { Vote } from '../utility/entities/vote.entity';
+import { Poll } from '../utility/entities/poll.entity';
+import { User } from '../utility/entities/user.entity';
+import { Option } from '../utility/entities/option.entity';
 import * as moment from 'moment';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 

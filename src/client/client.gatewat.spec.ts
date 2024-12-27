@@ -1,90 +1,96 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientGateway } from './client.gateway';
 import { ClientService } from './client.service';
-import { INestApplication } from '@nestjs/common';
+import { Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-import * as io from 'socket.io-client';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 
-describe('ClientGateway (e2e)', () => {
-  let app: INestApplication;
-  let server: Server;
-  let clientSocket: io.Socket;
+describe('ClientGateway', () => {
+  let gateway: ClientGateway;
   let clientService: ClientService;
+  let server: Server;
+  let socket: Socket;
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [EventEmitterModule.forRoot()],
+  beforeEach(async () => {
+    // Mocking dependencies
+    const clientServiceMock = {
+      addClient: jest.fn(),
+      removeClient: jest.fn(),
+    };
+
+    const serverMock = {
+      emit: jest.fn(),
+    };
+
+    const socketMock = {
+      id: 'client-id',
+    } as unknown as Socket;
+
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         ClientGateway,
-        {
-          provide: ClientService,
-          useValue: {
-            addClient: jest.fn(),
-            removeClient: jest.fn(),
-          },
-        },
+        { provide: ClientService, useValue: clientServiceMock },
+        { provide: Server, useValue: serverMock },
+        { provide: Socket, useValue: socketMock },
+        Logger,
       ],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-
-    // Get the WebSocket server instance
-    const gateway = app.get<ClientGateway>(ClientGateway);
-    server = gateway['server'];
+    gateway = module.get<ClientGateway>(ClientGateway);
+    clientService = module.get<ClientService>(ClientService);
+    server = module.get<Server>(Server);
+    socket = module.get<Socket>(Socket);
   });
 
-  beforeEach(() => {
-    // Connect client to the WebSocket server
-    clientSocket = io.io(`http://localhost:3000`, {
-      transports: ['websocket'],
+  it('should be defined', () => {
+    expect(gateway).toBeDefined();
+  });
+
+  it('should call addClient on handleConnection', () => {
+    const addClientSpy = jest.spyOn(clientService, 'addClient');
+    gateway.handleConnection(socket);
+    expect(addClientSpy).toHaveBeenCalledWith(socket.id, socket);
+  });
+
+  it('should call removeClient on handleDisconnect', () => {
+    const removeClientSpy = jest.spyOn(clientService, 'removeClient');
+    gateway.handleDisconnect(socket);
+    expect(removeClientSpy).toHaveBeenCalledWith(socket.id);
+  });
+
+  it('should log client connection and disconnection', () => {
+    const loggerSpy = jest.spyOn(Logger.prototype, 'log');
+    gateway.handleConnection(socket);
+    expect(loggerSpy).toHaveBeenCalledWith('Client connected: client-id');
+
+    gateway.handleDisconnect(socket);
+    expect(loggerSpy).toHaveBeenCalledWith('Client disconnected: client-id');
+  });
+
+  it('should handle message event', () => {
+    const message = 'test message';
+    const response = gateway.handleMessage(socket, message);
+    expect(response).toBe('Message received!');
+  });
+
+  it('should handle broadcastMessage event and emit broadcast', () => {
+    const message = 'Test broadcast message';
+
+    // Ensure afterInit is called before testing handleBroadcastMessage
+    gateway.afterInit(server);
+
+    gateway.handleBroadcastMessage(message);
+
+    expect(server.emit).toHaveBeenCalledWith('broadcast', {
+      from: 'boradcasting system',
+      message: message,
     });
   });
 
-  afterEach(() => {
-    if (clientSocket.connected) {
-      clientSocket.disconnect();
-    }
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('should connect and disconnect client', (done) => {
-    const spyAddClient = jest.spyOn(clientService, 'addClient');
-    const spyRemoveClient = jest.spyOn(clientService, 'removeClient');
-
-    clientSocket.on('connect', () => {
-      expect(spyAddClient).toHaveBeenCalled();
-      clientSocket.disconnect();
-    });
-
-    clientSocket.on('disconnect', () => {
-      expect(spyRemoveClient).toHaveBeenCalled();
-      done();
-    });
-  });
-
-  it('should handle message event', (done) => {
-    clientSocket.emit('message', 'Hello Server!');
-
-    clientSocket.on('message', (response) => {
-      expect(response).toBe('Message received!');
-      done();
-    });
-  });
-
-  it('should handle broadcast message', (done) => {
-    server.emit('broadcast', { from: 'System', message: 'Broadcast test' });
-
-    clientSocket.on('broadcast', (data) => {
-      expect(data).toEqual({
-        from: 'System',
-        message: 'Broadcast test',
-      });
-      done();
-    });
+  it('should call afterInit and log gateway initialization', () => {
+    const loggerSpy = jest.spyOn(Logger.prototype, 'log');
+    gateway.afterInit(server);
+    expect(loggerSpy).toHaveBeenCalledWith('Client Gateway Initialized');
   });
 });
