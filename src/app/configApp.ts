@@ -5,30 +5,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from 'src/utility/interceptors/request-logger.interceptor';
 import { AllExceptionsFilter } from 'src/utility/exceptionFilter/AllExceptionFilter';
 import { TransformInterceptor } from 'src/utility/interceptors/transform.interceptor';
-
-export const getEnv = (name: string, def = ''): string => {
-  try {
-    const env = process.env[name.toUpperCase()] || def;
-    if (!env) {
-      throw new Error(
-        `${name.toUpperCase()} not found on global environment vars`,
-      );
-    }
-    return env;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const availableEnv = {
-  LOCAL: 'LOCAL',
-  DEVELOPMENT: 'DEVELOPMENT',
-  PRODUCTION: 'PRODUCTION',
-};
-
-export const currentEnv = () => getEnv('ENV', availableEnv.LOCAL) as any;
-
-export const isLocal = () => currentEnv() === availableEnv.LOCAL;
+import { getEnv } from 'src/utility/utility';
 
 export function configApp(app: INestApplication<any>) {
   app.useGlobalFilters(new AllExceptionsFilter());

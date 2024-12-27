@@ -4,9 +4,9 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { isLocal } from 'src/config/configApp';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { isLocal } from '../utility';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {

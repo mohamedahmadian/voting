@@ -12,6 +12,7 @@ import { Poll } from 'src/utility/entities/poll.entity';
 import { User } from 'src/utility/entities/user.entity';
 import { Option } from 'src/utility/entities/option.entity';
 import * as moment from 'moment';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class VoteService {
@@ -20,6 +21,7 @@ export class VoteService {
     @InjectRepository(Poll) private pollRepository: Repository<Poll>,
     @InjectRepository(Option) private optionRepository: Repository<Option>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async registerVote(createVoteDto: CreateVoteDto): Promise<Vote> {
@@ -44,12 +46,12 @@ export class VoteService {
       throw new NotFoundException('User not found');
     }
 
-    const existingVote = await this.voteRepository.findOne({
-      where: { user: { id: userId }, poll: { id: pollId } },
-    });
-    if (existingVote) {
-      throw new ConflictException('User has already voted for this poll');
-    }
+    // const existingVote = await this.voteRepository.findOne({
+    //   where: { user: { id: userId }, poll: { id: pollId } },
+    // });
+    // if (existingVote) {
+    //   throw new ConflictException('User has already voted for this poll');
+    // }
 
     const vote = this.voteRepository.create({
       user: { id: userId },
@@ -57,7 +59,15 @@ export class VoteService {
       option: { id: optionId },
     });
 
-    return this.voteRepository.save(vote);
+    const voteResult = await this.voteRepository.save(vote);
+    this.eventEmitter.emit(
+      'broadcastMessage',
+      ` new Vote from (${user.name}) for Poll (${poll.title}) by selecting (${option.title})`,
+    );
+
+    const voteReport = await this.getPollReport(poll.id);
+    this.eventEmitter.emit('broadcastMessage', `${JSON.stringify(voteReport)}`);
+    return voteResult;
   }
 
   async getPollReport(pollId: number) {
@@ -79,27 +89,43 @@ export class VoteService {
       return acc;
     }, {});
 
-    // const optionVotesArray = Object.entries(optionVotes).map(
-    //   ([option, votes]) => ({
-    //     option,
-    //     votes,
-    //   }),
-    // );
+    const optionVotesArray = Object.entries(optionVotes).map(
+      ([option, votes]) => ({
+        option,
+        votes,
+      }),
+    );
 
-    return { totalVotes, optionVotes };
+    return { totalVotes, optionVotesArray };
   }
 
-  async getVotesByPoll(pollId: number): Promise<Vote[]> {
-    return this.voteRepository.find({
+  async getVotesByPoll(pollId: number) {
+    const votes = await this.voteRepository.find({
       where: { poll: { id: pollId } },
       relations: ['option', 'user'],
+    });
+    return votes.map((item) => {
+      return {
+        id: item.id,
+        createdAt: moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+        option: item.option.title,
+        user: item.user.name + `(${item.user.username})`,
+      };
     });
   }
 
   async getVotesByOption(optionId: number) {
-    return this.voteRepository.find({
+    const votes = await this.voteRepository.find({
       where: { option: { id: optionId } },
       relations: ['user', 'poll'],
+    });
+    return votes.map((item) => {
+      return {
+        id: item.id,
+        createdAt: moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+        poll: item.poll.title,
+        user: item.user.name + `(${item.user.username})`,
+      };
     });
   }
 

@@ -11,5 +11,6 @@ import { User } from 'src/utility/entities/user.entity';
   imports: [TypeOrmModule.forFeature([Vote, Poll, Option, User])],
   providers: [VoteService],
   controllers: [VoteController],
+  exports: [VoteService],
 })
 export class VoteModule {}

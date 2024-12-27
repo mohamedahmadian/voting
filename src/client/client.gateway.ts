@@ -12,6 +12,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 @WebSocketGateway({ cors: { origin: '*' } })
 export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ClientGateway.name);
+  private server = new Server();
 
   constructor(private readonly clientService: ClientService) {}
 
@@ -27,12 +28,7 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   afterInit(server: Server) {
     this.logger.log('Client Gateway Initialized');
-  }
-
-  logActiveConnection() {
-    this.logger.log(
-      `Active clients:${this.clientService.getAllClientsCount()}`,
-    );
+    this.server = server;
   }
 
   @SubscribeMessage('message')
@@ -41,13 +37,12 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return 'Message received!';
   }
 
-  @OnEvent('broadcastIt')
+  // this event will be fired from the controller to broadcast message via the http endpoint
+  @OnEvent('broadcastMessage')
   handleBroadcastMessage(message: string): void {
-    this.clientService.getAllClients().forEach((socket) => {
-      socket.emit('broadcast', {
-        from: 'boradcasting system',
-        message: message,
-      });
+    this.server.emit('broadcast', {
+      from: `boradcasting system`,
+      message: message,
     });
   }
 }

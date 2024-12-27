@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import * as path from 'path';
 import { entities } from './utility/entities/entities';
-import { getEnv } from './config/configApp';
+import { getEnv } from './utility/utility';
 
 export const datasourceConfig: DataSourceOptions = {
   type: 'postgres',

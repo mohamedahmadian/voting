@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { ClientGateway } from './client.gateway';
 import { ClientController } from './client.controller';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { VoteModule } from 'src/vote/vote.module';
 
 @Module({
-  imports: [],
+  imports: [VoteModule],
   controllers: [ClientController],
   providers: [ClientService, ClientGateway],
 })

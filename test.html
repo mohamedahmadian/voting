@@ -1,25 +1,55 @@
-<script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
-<script>
-  const socket = io('http://localhost:7000', {
-    transports: ['websocket'], // Ensure the WebSocket transport is enabled
-  });
+<html>
+  <body>
+    <div>
+      <h3>Websocket client test</h3>
+      <hr />
 
-  socket.on('connect', () => {
-    console.log('Connected to WebSocket server');
-  });
+      <div>
+        <b>Events Logs:</b>
+        <ul id="body"></ul>
+      </div>
+    </div>
+    <hr />
 
-  socket.on('message', (data) => {
-    console.log('Message from server:', data);
-  });
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+      const socket = io('http://localhost:7000/', {
+        transports: ['websocket'], // Ensure the WebSocket transport is enabled
+      });
 
-  socket.on('broadcast', (data) => {
-    console.log(`Message from ${data.from}: ${data.message}`);
-  });
+      socket.on('connect', () => {
+        let msg = 'Connected to WebSocket server';
+        console.log(msg);
+        const body = document.getElementById('body');
+        const newMessageInBody = document.createElement('li');
+        newMessageInBody.textContent = msg;
+        body.appendChild(newMessageInBody);
+      });
 
-  socket.on('connect_error', (err) => {
-    console.error('Connection error:', err);
-  });
+      socket.on('message', (data) => {
+        let msg = `Got new messge from server`;
+        console.log(msg);
+        const body = document.getElementById('body');
+        const newMessageInBody = document.createElement('li');
+        newMessageInBody.textContent = msg;
+        body.appendChild(newMessageInBody);
+      });
 
-  // Send a message to the server
-  socket.emit('message', 'Hello from client!');
-</script>
+      socket.on('broadcast', (data) => {
+        let msg = `Message from ${data.from}: ${data.message}`;
+        console.log(msg);
+        const body = document.getElementById('body');
+        const newMessageInBody = document.createElement('li');
+        newMessageInBody.textContent = msg;
+        body.appendChild(newMessageInBody);
+      });
+
+      socket.on('connect_error', (err) => {
+        console.error('Connection error:', err);
+      });
+
+      // Send a message to the server
+      socket.emit('message', 'Hello from client!');
+    </script>
+  </body>
+</html>
