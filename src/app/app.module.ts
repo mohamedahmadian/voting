@@ -6,6 +6,7 @@ import { OptionsModule } from '../option/option.module';
 import { UserModule } from '../user/user.module';
 import { VoteModule } from '../vote/vote.module';
 import { ClientModule } from '../client/client.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ClientModule } from '../client/client.module';
     PollModule,
     OptionsModule,
     UserModule,
+    DatabaseModule,
   ],
 })
 export class AppModule {}
