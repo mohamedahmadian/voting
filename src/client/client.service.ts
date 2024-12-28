@@ -1,34 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Socket } from 'socket.io';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MessageTypeEnum } from './enum/messageType.enum';
-import { VoteService } from '../vote/vote.service';
+import { ClientGateway } from './client.gateway';
+import { VoteReportService } from 'src/vote/vote.report.service';
 
 @Injectable()
 export class ClientService {
   constructor(
-    private readonly eventEmitter: EventEmitter2,
-    private readonly voteService: VoteService,
+    private readonly voteReportService: VoteReportService,
+    private readonly clientGateway: ClientGateway,
   ) {}
-  private activeClients = new Map<string, Socket>();
-
-  addClient(clientId: string, socket: Socket) {
-    this.activeClients.set(clientId, socket);
-  }
-
-  removeClient(clientId: string) {
-    this.activeClients.delete(clientId);
-  }
 
   getAllClients() {
-    return this.activeClients;
+    return this.clientGateway.getAllClients();
   }
 
   async broadCastMessage(type: MessageTypeEnum, messageOrPollId: string) {
     let message: any = messageOrPollId;
     if (type == MessageTypeEnum.poll) {
-      message = await this.voteService.getPollReport(parseInt(messageOrPollId));
+      const pollId = parseInt(messageOrPollId, 10);
+
+      if (isNaN(pollId)) {
+        throw new BadRequestException('Invalid poll ID, it must be a number.');
+      }
+      message = await this.voteReportService.getPollReport(
+        parseInt(messageOrPollId),
+      );
     }
-    this.eventEmitter.emit('broadcastMessage', message);
+    this.clientGateway.broadcastMessage(message);
   }
 }

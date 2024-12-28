@@ -6,7 +6,6 @@ import { OptionsModule } from '../option/option.module';
 import { UserModule } from '../user/user.module';
 import { VoteModule } from '../vote/vote.module';
 import { ClientModule } from '../client/client.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -17,11 +16,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       }),
     }),
     VoteModule,
+    ClientModule,
     PollModule,
     OptionsModule,
     UserModule,
-    ClientModule,
-    EventEmitterModule.forRoot(),
   ],
 })
 export class AppModule {}

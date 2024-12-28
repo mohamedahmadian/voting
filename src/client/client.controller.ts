@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ClientService } from './client.service';
 import { MessageTypeEnum } from './enum/messageType.enum';
 
@@ -22,11 +22,16 @@ export class ClientController {
 
   @Get('/broadcast/:type/:message')
   @ApiOperation({ summary: 'Broadcast message to all clients' })
+  @ApiParam({
+    name: 'type',
+    description: 'Type of message',
+    enum: MessageTypeEnum, // Display enum values in Swagger
+  })
   async broadCastMessage(
     @Param('message') message: string,
     @Param('type') type: MessageTypeEnum,
   ) {
-    this.clientService.broadCastMessage(type, message);
+    await this.clientService.broadCastMessage(type, message);
     return 'message broadcasted to all clients';
   }
 }

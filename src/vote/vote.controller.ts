@@ -10,11 +10,15 @@ import {
 import { VoteService } from './vote.service';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { VoteReportService } from './vote.report.service';
 
 @ApiTags('Votes')
 @Controller('votes')
 export class VoteController {
-  constructor(private readonly voteService: VoteService) {}
+  constructor(
+    private readonly voteService: VoteService,
+    private readonly voteReportService: VoteReportService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Register a new vote' })
@@ -33,35 +37,35 @@ export class VoteController {
   @Get('report/:pollId')
   @ApiOperation({ summary: 'Get vote report for a poll' })
   async getPollReport(@Param('pollId') pollId: number) {
-    return this.voteService.getPollReport(pollId);
+    return this.voteReportService.getPollReport(pollId);
   }
 
   @Get('user/most-active')
   @ApiOperation({ summary: 'Most active user in votings' })
   async getActiveUsers() {
-    return this.voteService.getActiveUsers();
+    return this.voteReportService.getActiveUsers();
   }
   @Get('poll/most-active')
   @ApiOperation({ summary: 'Most active user in votings' })
   async getMostActivePolls() {
-    return this.voteService.getMostActivePolls();
+    return this.voteReportService.getMostActivePolls();
   }
 
   @Get('poll/:pollId')
   @ApiOperation({ summary: 'Get votes per poll' })
   async getVotesByPoll(@Param('pollId') pollId: number) {
-    return this.voteService.getVotesByPoll(pollId);
+    return this.voteReportService.getVotesByPoll(pollId);
   }
 
   @Get('option/:optionId')
   @ApiOperation({ summary: 'Get votes per option' })
   async getVotesByOption(@Param('optionId') optionId: number) {
-    return this.voteService.getVotesByOption(optionId);
+    return this.voteReportService.getVotesByOption(optionId);
   }
 
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get votes per poll' })
   async getVotesByUser(@Param('userId') userId: number) {
-    return this.voteService.getVotesByUser(userId);
+    return this.voteReportService.getVotesByUser(userId);
   }
 }

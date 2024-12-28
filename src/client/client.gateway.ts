@@ -5,24 +5,33 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { ClientService } from './client.service';
 import { Socket, Server } from 'socket.io';
-import { OnEvent } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ClientGateway.name);
   private server = new Server();
+  private activeClients = new Map<string, Socket>();
 
-  constructor(private readonly clientService: ClientService) {}
+  addClient(clientId: string, socket: Socket) {
+    this.activeClients.set(clientId, socket);
+  }
+
+  removeClient(clientId: string) {
+    this.activeClients.delete(clientId);
+  }
+
+  getAllClients() {
+    return this.activeClients;
+  }
 
   handleConnection(client: Socket) {
-    this.clientService.addClient(client.id, client);
+    this.addClient(client.id, client);
     this.logger.log(`Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    this.clientService.removeClient(client.id);
+    this.removeClient(client.id);
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
@@ -37,8 +46,7 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return 'Message received!';
   }
 
-  @OnEvent('broadcastMessage')
-  handleBroadcastMessage(message: string): void {
+  broadcastMessage(message: string): void {
     this.server.emit('broadcast', {
       from: `broadcasting system`,
       message: message,
