@@ -13,7 +13,7 @@ This project is built with NestJS handling logic for voting system with minimal 
 - Voting service: [Voting service](https://voting-6hp9.onrender.com)
 - Retool Address: [Retool](https://zsco.retool.com/apps/voting)
 - Swagger Address: [Swagger](https://voting-6hp9.onrender.com/swagger)
-- Client test Address: [https://test-socket-vmdb.onrender.com/clientTest.html](https://test-socket-vmdb.onrender.com/clientTest.html)
+- Client websocket test Address: [Client websocket](https://test-socket-vmdb.onrender.com/clientTest.html)
 
 ## Project setup
 
@@ -31,7 +31,12 @@ $ npm run start
 
 ## Run tests
 
-Test include testing process for each controller and service defined in the system. we also have test for sockets communications and check if everything is working correctly.
+Test include testing process for following entities in the system. we also have test for sockets communications and check if everything is working correctly.
+
+- user
+- poll
+- option
+- vote
 
 ```bash
 # unit tests
