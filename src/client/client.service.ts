@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MessageTypeEnum } from './enum/messageType.enum';
 import { ClientGateway } from './client.gateway';
-import { VoteReportService } from 'src/vote/vote.report.service';
+import { VoteReportService } from '../vote/vote.report.service';
 
 @Injectable()
 export class ClientService {

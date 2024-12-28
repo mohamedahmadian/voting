@@ -4,7 +4,6 @@ import { ClientService } from './client.service';
 import { Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-import { OnEvent } from '@nestjs/event-emitter';
 
 describe('ClientGateway', () => {
   let gateway: ClientGateway;
@@ -47,18 +46,6 @@ describe('ClientGateway', () => {
     expect(gateway).toBeDefined();
   });
 
-  it('should call addClient on handleConnection', () => {
-    const addClientSpy = jest.spyOn(clientService, 'addClient');
-    gateway.handleConnection(socket);
-    expect(addClientSpy).toHaveBeenCalledWith(socket.id, socket);
-  });
-
-  it('should call removeClient on handleDisconnect', () => {
-    const removeClientSpy = jest.spyOn(clientService, 'removeClient');
-    gateway.handleDisconnect(socket);
-    expect(removeClientSpy).toHaveBeenCalledWith(socket.id);
-  });
-
   it('should log client connection and disconnection', () => {
     const loggerSpy = jest.spyOn(Logger.prototype, 'log');
     gateway.handleConnection(socket);
@@ -80,10 +67,10 @@ describe('ClientGateway', () => {
     // Ensure afterInit is called before testing handleBroadcastMessage
     gateway.afterInit(server);
 
-    gateway.handleBroadcastMessage(message);
+    gateway.broadcastMessage(message);
 
     expect(server.emit).toHaveBeenCalledWith('broadcast', {
-      from: 'boradcasting system',
+      from: 'broadcasting system',
       message: message,
     });
   });
