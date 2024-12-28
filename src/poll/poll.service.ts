@@ -1,16 +1,14 @@
 import {
   ConflictException,
   HttpException,
-  HttpStatus,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePollDto } from './dto/create-poll.dto';
-import { Poll } from 'src/utility/entities/poll.entity';
-import { UpdatePollDto } from './dto/update-pol.dto';
+import { Poll } from '../utility/entities/poll.entity';
+import { UpdatePollDto } from './dto/update-poll.dto';
 import { FindPollDto } from './dto/find-poll.dto';
 
 @Injectable()
@@ -36,7 +34,6 @@ export class PollService {
   async findAll(params: FindPollDto): Promise<Poll[]> {
     const queryBuilder = this.pollRepository.createQueryBuilder('poll');
 
-    console.log(params);
     if (params.id) {
       queryBuilder.andWhere('poll.id = :id', { id: params.id });
     }

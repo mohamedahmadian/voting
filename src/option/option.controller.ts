@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { OptionsService } from './option.service';
 import { CreateOptionDto } from './dto/create-option.do';
-import { RemoveOptionDto } from './dto/remove-option.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FindOptionDto } from './dto/find-option.dto';
 

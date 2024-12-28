@@ -18,7 +18,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdatePollDto } from './dto/update-pol.dto';
+import { UpdatePollDto } from './dto/update-poll.dto';
 import { FindPollDto } from './dto/find-poll.dto';
 
 @ApiTags('Polls')

@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Option } from 'src/utility/entities/option.entity';
-import { Poll } from 'src/utility/entities/poll.entity';
+import { Option } from '../utility/entities/option.entity';
+import { Poll } from '../utility/entities/poll.entity';
 import { Repository } from 'typeorm';
 import { CreateOptionDto } from './dto/create-option.do';
 import { UpdateOptionDto } from './dto/update-option.dto';
@@ -53,11 +53,16 @@ export class OptionsService {
 
   async removeOptionFromPoll(optionId: number): Promise<string> {
     try {
-      await this.optionRepository.delete({ id: optionId });
-      return 'Option removed successfully.';
+      const result = await this.optionRepository.delete({ id: optionId });
+      if (result.affected > 0) return 'Option removed successfully.';
+      else
+        throw new HttpException(
+          "Poll delete operation can't be done now!",
+          400,
+        );
     } catch (error) {
       throw new HttpException(
-        "You can't delete this poll becaause of votings  on this option",
+        "You can't delete this poll because of votings  on this option",
         400,
       );
     }
