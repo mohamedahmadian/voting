@@ -24,8 +24,7 @@ export class CreateOptionDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Poll Id',
-    example: 12,
     type: Number,
   })
-  pollId: number; // Poll ID to which this option belongs
+  pollId: number;
 }

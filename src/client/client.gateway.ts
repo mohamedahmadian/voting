@@ -37,11 +37,10 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return 'Message received!';
   }
 
-  // this event will be fired from the controller to broadcast message via the http endpoint
   @OnEvent('broadcastMessage')
   handleBroadcastMessage(message: string): void {
     this.server.emit('broadcast', {
-      from: `boradcasting system`,
+      from: `broadcasting system`,
       message: message,
     });
   }

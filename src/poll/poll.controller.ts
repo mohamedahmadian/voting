@@ -34,18 +34,6 @@ export class PollController {
 
   @Get()
   @ApiOperation({ summary: 'Return all polls' })
-  @ApiQuery({
-    name: 'id',
-    required: false,
-    description: 'Filter by poll ID',
-    type: String,
-  })
-  @ApiQuery({
-    name: 'title',
-    required: false,
-    description: 'Filter by poll title (partial match)',
-    type: String,
-  })
   async findAll(@Query() query: FindPollDto) {
     return this.pollService.findAll(query);
   }
@@ -58,7 +46,7 @@ export class PollController {
     description: 'Filter by poll ID',
     type: String,
   })
-  async getPollResult(@Query('pollId', ParseIntPipe) pollId: number) {
+  async getPollReport(@Query('pollId', ParseIntPipe) pollId: number) {
     return this.pollService.getPollReport(pollId);
   }
 
@@ -90,7 +78,7 @@ export class PollController {
 
   @Delete(':pollId')
   @ApiOperation({ summary: 'Remove a poll' })
-  async removeOption(@Param('pollId') pollId: number): Promise<string> {
+  async remove(@Param('pollId') pollId: number): Promise<string> {
     return this.pollService.delete(pollId);
   }
 }

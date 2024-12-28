@@ -6,10 +6,12 @@ import {
   Param,
   Delete,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { UpdateUserDto } from './dto/updae.user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -20,6 +22,15 @@ export class UserController {
   @ApiOperation({ summary: 'Create new user' })
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Patch(':userId')
+  @ApiOperation({ summary: 'update user' })
+  async update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Param('userId') userId: number,
+  ) {
+    return this.userService.update(userId, updateUserDto);
   }
 
   @Get(':id')
@@ -66,12 +77,11 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiQuery({
+  @ApiParam({
     name: 'id',
-    required: false,
-    type: String,
+    required: true,
+    type: Number,
     description: 'User ID',
-    example: '',
   })
   @ApiOperation({ summary: 'Delete a user by ID' })
   async delete(@Param('id') id: number) {

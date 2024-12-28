@@ -20,7 +20,8 @@ export class VoteController {
   @ApiOperation({ summary: 'Register a new vote' })
   async registerVote(@Body() createVoteDto: CreateVoteDto) {
     try {
-      return await this.voteService.registerVote(createVoteDto);
+      const voteResult = await this.voteService.registerVote(createVoteDto);
+      return voteResult;
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;

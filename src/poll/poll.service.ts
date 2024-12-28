@@ -26,7 +26,9 @@ export class PollService {
       },
     });
     if (existingPoll) {
-      throw new ConflictException('Poll title should be unique');
+      throw new ConflictException(
+        'Poll title should be unique, please choose another title',
+      );
     }
     return this.pollRepository.save(poll);
   }
@@ -100,13 +102,16 @@ export class PollService {
 
   async delete(pollId: number) {
     try {
-      await this.pollRepository.delete({ id: pollId });
-      return 'Poll removed successfully';
+      const result = await this.pollRepository.delete({ id: pollId });
+      if (result.affected > 0) return 'Poll removed successfully';
+      else throw new NotFoundException("Poll doesn't exist");
     } catch (error) {
-      throw new HttpException(
-        "You can't delete this poll becaause of votings  on this pool",
-        400,
-      );
+      if (error instanceof NotFoundException) throw error;
+      else
+        throw new HttpException(
+          "You can't delete this poll becaause of votings  on this pool",
+          400,
+        );
     }
   }
 }

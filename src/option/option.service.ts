@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Option } from '../utility/entities/option.entity';
 import { Poll } from '../utility/entities/poll.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateOptionDto } from './dto/create-option.do';
 import { UpdateOptionDto } from './dto/update-option.dto';
 import { FindOptionDto } from './dto/find-option.dto';
@@ -37,7 +37,7 @@ export class OptionsService {
     });
     if (existingOption) {
       throw new HttpException(
-        "Option text can't be repetitive!, please choose another text",
+        "Option title can't be repetitive!, please choose another title",
         HttpStatus.CONFLICT,
       );
     }
@@ -51,43 +51,35 @@ export class OptionsService {
     return this.optionRepository.save(option);
   }
 
-  async removeOptionFromPoll(optionId: number): Promise<string> {
+  async remove(optionId: number): Promise<string> {
     try {
       const result = await this.optionRepository.delete({ id: optionId });
       if (result.affected > 0) return 'Option removed successfully.';
+      else throw new NotFoundException('Option not found');
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
       else
         throw new HttpException(
-          "Poll delete operation can't be done now!",
+          "You can't delete this poll because of votings  on this option",
           400,
         );
-    } catch (error) {
-      throw new HttpException(
-        "You can't delete this poll because of votings  on this option",
-        400,
-      );
     }
   }
 
   async findAll(findOptionDto: FindOptionDto): Promise<Option[]> {
-    const queryBuilder = this.optionRepository.createQueryBuilder('option');
-
+    const where: any = {};
     if (findOptionDto.id) {
-      queryBuilder.andWhere('option.id = :id', { id: findOptionDto.id });
+      where.id = findOptionDto.id;
     }
-
-    if (findOptionDto.title) {
-      queryBuilder.andWhere('option.title LIKE :title', {
-        title: `%${findOptionDto.title}%`,
-      });
-    }
-
     if (findOptionDto.pollId) {
-      queryBuilder.andWhere('option.pollId = :pollId', {
-        pollId: findOptionDto.pollId,
-      });
+      where.poll = {
+        id: findOptionDto.pollId,
+      };
     }
-
-    return queryBuilder.getMany();
+    if (findOptionDto.title) {
+      where.title = Like(`%${findOptionDto.title}%`);
+    }
+    return this.optionRepository.find({ where });
   }
 
   async findOption(optionId: number): Promise<Option> {
@@ -97,7 +89,7 @@ export class OptionsService {
       },
     });
     if (!option) {
-      throw new NotFoundException('Poll not found');
+      throw new NotFoundException('Option not found');
     }
     return option;
   }

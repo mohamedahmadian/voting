@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateVoteDto } from './dto/create-vote.dto';
@@ -19,6 +23,16 @@ export class VoteService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * user can only vote one time,
+   * after voting, notification system will be fired to notify all users about the vote
+   *
+   *
+   *
+   * @param {CreateVoteDto} createVoteDto
+   * @return {*}  {Promise<Vote>}
+   * @memberof VoteService
+   */
   async registerVote(createVoteDto: CreateVoteDto): Promise<Vote> {
     const { pollId, optionId, userId } = createVoteDto;
 
@@ -41,20 +55,37 @@ export class VoteService {
       throw new NotFoundException('User not found');
     }
 
-    // const existingVote = await this.voteRepository.findOne({
-    //   where: { user: { id: userId }, poll: { id: pollId } },
-    // });
-    // if (existingVote) {
-    //   throw new ConflictException('User has already voted for this poll');
-    // }
+    const existingVote = await this.voteRepository.findOne({
+      where: { user: { id: userId }, poll: { id: pollId } },
+    });
+    if (existingVote) {
+      throw new ConflictException(
+        `User has already voted for this poll at ${moment(existingVote.createdAt).format('YYYY-MM-DD HH:mm:ss')}`,
+      );
+    }
 
     const vote = this.voteRepository.create({
-      user: { id: userId },
-      poll: { id: pollId },
-      option: { id: optionId },
+      user,
+      poll,
+      option,
     });
 
     const voteResult = await this.voteRepository.save(vote);
+    this.notify(user, poll, option);
+    return voteResult;
+  }
+
+  /**
+   * We send to type of notification for all users connected to websocket server
+   * - first: information about new vote
+   * - second : a full report of selected pool
+   *
+   * @param {User} user
+   * @param {Poll} poll
+   * @param {Option} option
+   * @memberof VoteService
+   */
+  async notify(user: User, poll: Poll, option: Option) {
     this.eventEmitter.emit(
       'broadcastMessage',
       ` new Vote from (${user.name}) for Poll (${poll.title}) by selecting (${option.title})`,
@@ -62,7 +93,6 @@ export class VoteService {
 
     const voteReport = await this.getPollReport(poll.id);
     this.eventEmitter.emit('broadcastMessage', `${JSON.stringify(voteReport)}`);
-    return voteResult;
   }
 
   async getPollReport(pollId: number) {
@@ -94,6 +124,13 @@ export class VoteService {
     return { poll: poll.title, totalVotes, optionVotesArray };
   }
 
+  /**
+   * Get all votes by selecting specific pool which return selected user and option in each row
+   *
+   * @param {number} pollId
+   * @return {*}
+   * @memberof VoteService
+   */
   async getVotesByPoll(pollId: number) {
     const votes = await this.voteRepository.find({
       where: { poll: { id: pollId } },
@@ -109,6 +146,13 @@ export class VoteService {
     });
   }
 
+  /**
+   *
+   * Get all votes by selecting specific option which return selected user and poll in each row
+   * @param {number} optionId
+   * @return {*}
+   * @memberof VoteService
+   */
   async getVotesByOption(optionId: number) {
     const votes = await this.voteRepository.find({
       where: { option: { id: optionId } },
@@ -124,6 +168,12 @@ export class VoteService {
     });
   }
 
+  /**
+   * Return an ordered list of users with most particiption in voting
+   *
+   * @return {*}  {Promise<{ name: string; voteCount: number }[]>}
+   * @memberof VoteService
+   */
   async getActiveUsers(): Promise<{ name: string; voteCount: number }[]> {
     const activeUsers = await this.voteRepository
       .createQueryBuilder('vote')
@@ -141,6 +191,14 @@ export class VoteService {
     }));
   }
 
+  /**
+   * Return an ordered list of polla with most participations
+   *
+   * @return {*}  {Promise<
+   *     { pollTitle: string; voteCount: number }[]
+   *   >}
+   * @memberof VoteService
+   */
   async getMostActivePolls(): Promise<
     { pollTitle: string; voteCount: number }[]
   > {
@@ -157,6 +215,13 @@ export class VoteService {
     return pollParticipation;
   }
 
+  /**
+   * Return all votes from selected user returning selected poll and option in each row
+   *
+   * @param {number} userId
+   * @return {*}
+   * @memberof VoteService
+   */
   async getVotesByUser(userId: number) {
     const votes = await this.voteRepository.find({
       where: { user: { id: userId } },

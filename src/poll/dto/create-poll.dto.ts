@@ -15,6 +15,5 @@ export class CreatePollDto {
     example: 'some description',
     type: String,
   })
-  @IsNotEmpty()
   description: string;
 }

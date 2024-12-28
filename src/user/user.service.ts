@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '../utility/entities/user.entity';
 import { FindUserDto } from './dto/find-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/updae.user.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -19,7 +21,6 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<any> {
     const { username, password, name } = createUserDto;
 
-    // Check if username already exists
     const existingUser = await this.userRepository.findOne({
       where: { username },
     });
@@ -29,19 +30,33 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create and save new user
     const newUser = this.userRepository.create({
       username,
       password: hashedPassword,
       name,
     });
     const user = await this.userRepository.save(newUser);
-    return {
-      name: user.name,
-      username: user.username,
-      id: user.id,
-      createdAt: user.createdAt,
-    };
+    return user;
+  }
+
+  async update(userId: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateUserDto.password) {
+      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+      user.password = hashedPassword;
+    }
+
+    if (updateUserDto.name) {
+      user.name = updateUserDto.name;
+    }
+
+    await this.userRepository.save(user);
+    return user;
   }
 
   async findOne(id: number) {
@@ -75,15 +90,18 @@ export class UserService {
 
     return this.userRepository.find(queryOptions);
   }
-  async findAllByPoll(): Promise<User[]> {
-    return this.userRepository.find({
-      relations: ['polls'],
-    });
-  }
 
   async delete(id: number): Promise<string> {
-    const result = await this.userRepository.delete(id);
-    if (result.affected > 0) return `User (${id}) deleted successfully`;
-    else throw new NotFoundException('User not found');
+    try {
+      const result = await this.userRepository.delete(id);
+      if (result.affected > 0) return `User (${id}) deleted successfully`;
+      else throw new NotFoundException(`User (${id}) not found`);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new BadRequestException("User can't be deleted");
+      }
+    }
   }
 }

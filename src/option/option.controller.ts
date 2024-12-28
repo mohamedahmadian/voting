@@ -25,8 +25,8 @@ export class OptionsController {
 
   @Delete(':optionId')
   @ApiOperation({ summary: 'Remove an option from a poll' })
-  async removeOption(@Param('optionId') optionId: number): Promise<string> {
-    return this.optionsService.removeOptionFromPoll(optionId);
+  async remove(@Param('optionId') optionId: number): Promise<string> {
+    return this.optionsService.remove(optionId);
   }
 
   @Get()

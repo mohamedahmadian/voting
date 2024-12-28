@@ -14,6 +14,6 @@ export class CreateVoteDto {
 
   @IsInt()
   @IsNotEmpty()
-  @ApiProperty({ description: 'User doing vote', example: 1 })
+  @ApiProperty({ description: 'Id of User doing vote', example: 1 })
   userId: number;
 }
