@@ -64,7 +64,8 @@ describe('UserService', () => {
       mockUserRepository.findOne.mockResolvedValue(null);
       mockUserRepository.create.mockReturnValue(createUserDto);
       mockUserRepository.save.mockResolvedValue({
-        ...createUserDto,
+        username: 'newUser',
+        name: 'New User',
         id: 1,
         createdAt: new Date(),
       });

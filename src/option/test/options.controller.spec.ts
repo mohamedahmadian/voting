@@ -10,7 +10,7 @@ describe('OptionsController', () => {
 
   const mockOptionsService = {
     create: jest.fn(),
-    removeOptionFromPoll: jest.fn(),
+    remove: jest.fn(),
     findAll: jest.fn(),
     findOption: jest.fn(),
   };
@@ -51,14 +51,14 @@ describe('OptionsController', () => {
   });
 
   describe('removeOption', () => {
-    it('should call removeOptionFromPoll on the service with the correct ID', async () => {
+    it('should call remove on the service with the correct ID', async () => {
       const optionId = 1;
       const message = 'Option removed successfully.';
-      mockOptionsService.removeOptionFromPoll.mockResolvedValue(message);
+      mockOptionsService.remove.mockResolvedValue(message);
 
-      const result = await controller.removeOption(optionId);
+      const result = await controller.remove(optionId);
 
-      expect(service.removeOptionFromPoll).toHaveBeenCalledWith(optionId);
+      expect(service.remove).toHaveBeenCalledWith(optionId);
       expect(result).toBe(message);
     });
   });

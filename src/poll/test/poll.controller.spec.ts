@@ -132,7 +132,7 @@ describe('PollController', () => {
     it('should delete a poll', async () => {
       mockPollService.delete.mockResolvedValue('Poll removed successfully');
 
-      const result = await pollController.removeOption(1);
+      const result = await pollController.remove(1);
       expect(result).toEqual('Poll removed successfully');
       expect(mockPollService.delete).toHaveBeenCalledWith(1);
     });
@@ -142,9 +142,7 @@ describe('PollController', () => {
         new NotFoundException('Poll not found'),
       );
 
-      await expect(pollController.removeOption(1)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(pollController.remove(1)).rejects.toThrow(NotFoundException);
     });
   });
 });

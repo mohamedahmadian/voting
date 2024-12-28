@@ -23,6 +23,7 @@ describe('OptionsService', () => {
     save: jest.fn(),
     findOne: jest.fn(),
     delete: jest.fn(),
+    find: jest.fn(),
     createQueryBuilder: jest.fn(() => createQueryBuilderMock),
   };
 
@@ -126,7 +127,7 @@ describe('OptionsService', () => {
     it('should remove an option if it exists', async () => {
       mockOptionRepository.delete.mockResolvedValue({ affected: 1 });
 
-      const result = await service.removeOptionFromPoll(1);
+      const result = await service.remove(1);
 
       expect(optionRepository.delete).toHaveBeenCalledWith({ id: 1 });
       expect(result).toEqual('Option removed successfully.');
@@ -135,9 +136,7 @@ describe('OptionsService', () => {
     it('should throw HttpException if delete fails', async () => {
       mockOptionRepository.delete.mockResolvedValue({ affected: 0 });
 
-      await expect(service.removeOptionFromPoll(1)).rejects.toThrow(
-        HttpException,
-      );
+      await expect(service.remove(1)).rejects.toThrow(HttpException);
     });
   });
 
@@ -146,13 +145,11 @@ describe('OptionsService', () => {
       const findOptionDto: FindOptionDto = { pollId: 1 };
       const options = [{ id: 1, title: 'Option A' }];
 
-      mockOptionRepository
-        .createQueryBuilder()
-        .getMany.mockResolvedValue(options);
+      mockOptionRepository.find.mockResolvedValue(options);
 
       const result = await service.findAll(findOptionDto);
 
-      expect(optionRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(optionRepository.find).toHaveBeenCalled();
       expect(result).toEqual(options);
     });
   });
