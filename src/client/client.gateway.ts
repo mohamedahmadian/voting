@@ -49,7 +49,7 @@ export class ClientGateway implements OnGatewayConnection, OnGatewayDisconnect {
   broadcastMessage(message: string): void {
     this.server.emit('broadcast', {
       from: `broadcasting system`,
-      message: message,
+      message,
     });
   }
 }
