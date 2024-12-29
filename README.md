@@ -52,6 +52,8 @@ $ npm run test
 
 - Database creation/modification: using typeorm migration mechanism
 
+<img src="https://ibb.co/sjCC2XS" width="400px" alt="Nest Logo" />
+
 #### user
 
 - All information related to the user like name, username, password, etc
