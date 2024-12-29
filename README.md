@@ -52,7 +52,7 @@ $ npm run test
 
 - Database creation/modification: using typeorm migration mechanism
 
-<img src="https://ibb.co/sjCC2XS" width="400px" alt="Nest Logo" />
+<img src="https://i.ibb.co/kKJJxPn/db-Diagram.png" width="400px" alt="Nest Logo" />
 
 #### user
 
