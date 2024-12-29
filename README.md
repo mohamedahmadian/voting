@@ -37,6 +37,7 @@ Test include testing process for following entities in the system. we also have 
 - poll
 - option
 - vote
+- webSocket
 
 ```bash
 # unit tests
@@ -51,6 +52,8 @@ $ npm run test
 - ORM: TypeOrm
 
 - Database creation/modification: using typeorm migration mechanism
+
+- Entities: ( User - Poll - Option - Vote )
 
 <img src="https://i.ibb.co/kKJJxPn/db-Diagram.png" width="400px" alt="Nest Logo" />
 
@@ -82,33 +85,33 @@ Retool is used to create an easy-to-use admin interface for managing the voting 
 
 Retool Address: [https://zsco.retool.com/apps/voting](https://zsco.retool.com/apps/voting)
 
+<img src="https://i.ibb.co/269bbWK/retool.png" width="400px" alt="Nest Logo" />
+
 ## Deployment
 
 The test project has been deployed on Render.com website which consist of following:
 
-### postgres database
+#### postgres database
 
-storing data about voting system
+storing data about voting system.
 
-### voting backend service
+#### voting backend service
 
 Contains the voting system logic and WebSocket management.
 
-### socket client test service
+- Voting service: [Voting service](https://voting-6hp9.onrender.com)
+
+#### socket client test service
 
 Simulates a WebSocket client that connects to the WebSocket server running on the same port as the backend service.
 
-Client test Address: [https://test-socket-vmdb.onrender.com/clientTest.html](https://test-socket-vmdb.onrender.com/clientTest.html)
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Client websocket test Address: [Client websocket](https://test-socket-vmdb.onrender.com/clientTest.html)
 
 ## Stay in touch
 
-- Author - [Mohamed Ahmadain](mohamed.ahmadian@gmail.com)
+- Author - [Mohamed Ahmadian](mohamed.ahmadian@gmail.com)
 
-- github - [Voting source](https://github.com/mohamedahmadian/voting/tree/main)
+- Phone - +989159103070
 
 ## License
 
