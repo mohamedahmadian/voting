@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClientGateway } from './client.gateway';
-import { ClientService } from './client.service';
 import { Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
+import { ClientGateway } from '../client.gateway';
+import { ClientService } from '../client.service';
 
 describe('ClientGateway', () => {
   let gateway: ClientGateway;
