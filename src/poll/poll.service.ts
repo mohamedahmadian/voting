@@ -109,7 +109,7 @@ export class PollService {
       if (error instanceof NotFoundException) throw error;
       else
         throw new HttpException(
-          "You can't delete this poll becaause of votings  on this pool",
+          "You can't delete this poll because of votings  on this pool",
           400,
         );
     }
